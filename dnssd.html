@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Module dnssd</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module dnssd</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>  
+This module is the main interface to the application.
+
+
+<h2><a name="description">Description</a></h2><p>  
+This module is the main interface to the application.</p>
+ 
+  <p>The <a href="#enumerate-1">enumerate</a>, <a href="#browse-1">browse</a>,
+  <a href="#resolve-3">resolve</a> and <a href="#register-2">register</a> functions all
+  return <code>{ok, <a href="#type-op_ref">op_ref()</a>}</code> or <code>{error, term()}</code>.
+  Results are then sent to the calling process in messages of the form
+  <code><a href="#type-result_message">result_message()</a></code>. If the operation crashes a message of the form
+  <code>{dnssd, <a href="#type-op_ref">op_ref()</a>, crash}</code> will be sent.</p>
+ 
+  <p>The synchronous <a href="#resolve-3">resolve</a> wrapper
+  <a href="#resolve_sync-3">resolve_sync</a> returns
+  <code>{ok, <a href="#type-resolve_sync_result">resolve_sync_result()</a>}</code> or <code>{error, term()}</code>.</p>
+ 
+  Operation are stopped by passing <code><a href="#type-op_ref">op_ref()</a></code> to <a href="#stop-1"><code>stop/1</code></a>.
+  Operations will also be stopped if the calling process exits.
+ 
+<h2><a name="types">Data Types</a></h2>
+
+<h3 class="typedecl"><a name="type-browse_result">browse_result()</a></h3>
+<p><tt>browse_result() = {browse, add | remove, {<a href="#type-name">name()</a>, <a href="#type-type">type()</a>, <a href="#type-domain">domain()</a>}}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-domain">domain()</a></h3>
+<p><tt>domain() = binary() | iolist()</tt></p>
+
+
+<h3 class="typedecl"><a name="type-domain_type">domain_type()</a></h3>
+<p><tt>domain_type() = reg | browse</tt></p>
+
+
+<h3 class="typedecl"><a name="type-enumerate_result">enumerate_result()</a></h3>
+<p><tt>enumerate_result() = {enumerate, add | remove, binary()}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-hostname">hostname()</a></h3>
+<p><tt>hostname() = binary() | iolist()</tt></p>
+
+
+<h3 class="typedecl"><a name="type-ip_port">ip_port()</a></h3>
+<p><tt>ip_port() = 0..65535</tt></p>
+
+
+<h3 class="typedecl"><a name="type-name">name()</a></h3>
+<p><tt>name() = binary() | iolist()</tt></p>
+
+
+<h3 class="typedecl"><a name="type-op_ref">op_ref()</a></h3>
+<p><b>abstract datatype</b>: <tt>op_ref()</tt></p>
+
+
+<h3 class="typedecl"><a name="type-register_result">register_result()</a></h3>
+<p><tt>register_result() = {register, add | remove, {<a href="#type-name">name()</a>, <a href="#type-type">type()</a>, <a href="#type-domain">domain()</a>}}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-resolve_result">resolve_result()</a></h3>
+<p><tt>resolve_result() = {resolve, {<a href="#type-hostname">hostname()</a>, <a href="#type-ip_port">ip_port()</a>, <a href="#type-txt_strings">txt_strings()</a>}}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-resolve_sync_result">resolve_sync_result()</a></h3>
+<p><tt>resolve_sync_result() = {<a href="#type-hostname">hostname()</a>, <a href="#type-ip_port">ip_port()</a>, <a href="#type-txt_strings">txt_strings()</a>}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-result">result()</a></h3>
+<p><tt>result() = <a href="#type-enumerate_result">enumerate_result()</a> | <a href="#type-browse_result">browse_result()</a> | <a href="#type-resolve_result">resolve_result()</a> | <a href="#type-register_result">register_result()</a></tt></p>
+
+
+<h3 class="typedecl"><a name="type-result_message">result_message()</a></h3>
+<p><tt>result_message() = {dnssd, <a href="#type-op_ref">op_ref()</a>, <a href="#type-result">result()</a>}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-txt_string">txt_string()</a></h3>
+<p><tt>txt_string() = {atom() | iolist(), atom(), iolist()} | iolist()</tt></p>
+
+
+<h3 class="typedecl"><a name="type-txt_strings">txt_strings()</a></h3>
+<p><tt>txt_strings() = &lt;&lt;&gt;&gt; | &lt;&lt;_:8, _:_*8&gt;&gt; | [<a href="#type-txt_string">txt_string()</a>]</tt></p>
+
+
+<h3 class="typedecl"><a name="type-type">type()</a></h3>
+<p><tt>type() = binary() | iolist()</tt></p>
+
+
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#browse-1">browse/1</a></td><td>Equivalent to <a href="#browse-2"><tt>browse(Type, &lt;&lt;&gt;&gt;)</tt></a>.
+</td></tr>
+<tr><td valign="top"><a href="#browse-2">browse/2</a></td><td>Browse for services.</td></tr>
+<tr><td valign="top"><a href="#enumerate-1">enumerate/1</a></td><td>Enumerate browse or registration domains.</td></tr>
+<tr><td valign="top"><a href="#register-2">register/2</a></td><td>Equivalent to <a href="#register-3"><tt>register(Type, Port, &lt;&lt;&gt;&gt;)</tt></a>.
+</td></tr>
+<tr><td valign="top"><a href="#register-3">register/3</a></td><td>edoc doesn't pickup the alternative invocation which is:
+       register(Type::iolist(), Port::integer(), Txt::list() | iolist()).</td></tr>
+<tr><td valign="top"><a href="#register-4">register/4</a></td><td>Equivalent to <a href="#register-6"><tt>register(Name, Type, Port, Txt, &lt;&lt;&gt;&gt;, &lt;&lt;&gt;&gt;)</tt></a>.
+</td></tr>
+<tr><td valign="top"><a href="#register-6">register/6</a></td><td>Register a service.</td></tr>
+<tr><td valign="top"><a href="#resolve-3">resolve/3</a></td><td>Resolve a service instance.</td></tr>
+<tr><td valign="top"><a href="#resolve_sync-3">resolve_sync/3</a></td><td>Equivalent to <a href="#resolve_sync-4"><tt>resolve_sync(Name, Type, Domain, 5000)</tt></a>.
+</td></tr>
+<tr><td valign="top"><a href="#resolve_sync-4">resolve_sync/4</a></td><td>Returns the first result from resolving a service instance and
+       then cancels the operation.</td></tr>
+<tr><td valign="top"><a href="#results-1">results/1</a></td><td>Retrieve the current results of an operation.</td></tr>
+<tr><td valign="top"><a href="#start-0">start/0</a></td><td>Start the DNSSD application.</td></tr>
+<tr><td valign="top"><a href="#stop-0">stop/0</a></td><td>Stop the DNSSD application.</td></tr>
+<tr><td valign="top"><a href="#stop-1">stop/1</a></td><td>Stop a DNSSD operation.</td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="browse-1">browse/1</a></h3>
+<div class="spec">
+<p><tt>browse(Type::<a href="#type-type">type()</a>) -&gt; {ok, <a href="#type-op_ref">op_ref()</a>} | {error, term()}</tt><br></p>
+</div><p>Equivalent to <a href="#browse-2"><tt>browse(Type, &lt;&lt;&gt;&gt;)</tt></a>.</p>
+
+
+<h3 class="function"><a name="browse-2">browse/2</a></h3>
+<div class="spec">
+<p><tt>browse(Type::<a href="#type-type">type()</a>, Domain::<a href="#type-domain">domain()</a>) -&gt; {ok, <a href="#type-op_ref">op_ref()</a>} | {error, term()}</tt><br></p>
+</div><p>Browse for services. If domain is empty, browse all domains.</p>
+
+<h3 class="function"><a name="enumerate-1">enumerate/1</a></h3>
+<div class="spec">
+<p><tt>enumerate(Type::<a href="#type-domain_type">domain_type()</a>) -&gt; {ok, <a href="#type-op_ref">op_ref()</a>} | {error, term()}</tt><br></p>
+</div><p>Enumerate browse or registration domains</p>
+
+<h3 class="function"><a name="register-2">register/2</a></h3>
+<div class="spec">
+<p><tt>register(Type::<a href="#type-type">type()</a>, Port::<a href="#type-ip_port">ip_port()</a>) -&gt; {ok, <a href="#type-op_ref">op_ref()</a>} | {error, term()}</tt><br></p>
+</div><p>Equivalent to <a href="#register-3"><tt>register(Type, Port, &lt;&lt;&gt;&gt;)</tt></a>.</p>
+
+
+<h3 class="function"><a name="register-3">register/3</a></h3>
+<div class="spec">
+<p><tt>register(Name::<a href="#type-name">name()</a>, Type::<a href="#type-type">type()</a>, Port::<a href="#type-ip_port">ip_port()</a>) -&gt; {ok, <a href="#type-op_ref">op_ref()</a>} | {error, term()}</tt><br></p>
+</div><p>Equivalent to <a href="#register-4"><tt>register(Name, Type, Port, Txt)</tt></a>.</p>
+<p>edoc doesn't pickup the alternative invocation which is:
+       register(Type::iolist(), Port::integer(), Txt::list() | iolist())</p>
+
+<h3 class="function"><a name="register-4">register/4</a></h3>
+<div class="spec">
+<p><tt>register(Name::<a href="#type-name">name()</a>, Type::<a href="#type-type">type()</a>, Port::<a href="#type-ip_port">ip_port()</a>, Txt::<a href="#type-txt_strings">txt_strings()</a>) -&gt; {ok, <a href="#type-op_ref">op_ref()</a>} | {error, term()}</tt><br></p>
+</div><p>Equivalent to <a href="#register-6"><tt>register(Name, Type, Port, Txt, &lt;&lt;&gt;&gt;, &lt;&lt;&gt;&gt;)</tt></a>.</p>
+
+
+<h3 class="function"><a name="register-6">register/6</a></h3>
+<div class="spec">
+<p><tt>register(Name::<a href="#type-name">name()</a>, Type::<a href="#type-type">type()</a>, Port::<a href="#type-ip_port">ip_port()</a>, Txt::<a href="#type-txt_strings">txt_strings()</a>, Host::<a href="#type-hostname">hostname()</a>, Domain::<a href="#type-domain">domain()</a>) -&gt; {ok, <a href="#type-op_ref">op_ref()</a>} | {error, term()}</tt><br></p>
+</div><p>Register a service. If localhost is passed as Host the
+       service will be registered only on the local machine.</p>
+
+<h3 class="function"><a name="resolve-3">resolve/3</a></h3>
+<div class="spec">
+<p><tt>resolve(Name::<a href="#type-name">name()</a>, Type::<a href="#type-type">type()</a>, Domain::<a href="#type-domain">domain()</a>) -&gt; {ok, <a href="#type-op_ref">op_ref()</a>} | {error, term()}</tt><br></p>
+</div><p>Resolve a service instance.</p>
+
+<h3 class="function"><a name="resolve_sync-3">resolve_sync/3</a></h3>
+<div class="spec">
+<p><tt>resolve_sync(Name::<a href="#type-name">name()</a>, Type::<a href="#type-type">type()</a>, Domain::<a href="#type-domain">domain()</a>) -&gt; {ok, <a href="#type-resolve_sync_result">resolve_sync_result()</a>} | {error, term()}</tt><br></p>
+</div><p>Equivalent to <a href="#resolve_sync-4"><tt>resolve_sync(Name, Type, Domain, 5000)</tt></a>.</p>
+
+
+<h3 class="function"><a name="resolve_sync-4">resolve_sync/4</a></h3>
+<div class="spec">
+<p><tt>resolve_sync(Name::<a href="#type-name">name()</a>, Type::<a href="#type-type">type()</a>, Domain::<a href="#type-domain">domain()</a>, Timeout::pos_integer()) -&gt; {ok, <a href="#type-resolve_sync_result">resolve_sync_result()</a>} | {error, term()}</tt><br></p>
+</div><p>Returns the first result from resolving a service instance and
+       then cancels the operation. Times out after Timeout milliseconds.</p>
+
+<h3 class="function"><a name="results-1">results/1</a></h3>
+<div class="spec">
+<p><tt>results(Ref::<a href="#type-op_ref">op_ref()</a>) -&gt; {ok, [<a href="#type-result">result()</a>]} | {error, term()}</tt><br></p>
+</div><p>Retrieve the current results of an operation</p>
+
+<h3 class="function"><a name="start-0">start/0</a></h3>
+<div class="spec">
+<p><tt>start() -&gt; ok | {error, term()}</tt><br></p>
+</div><p>Start the DNSSD application</p>
+
+<h3 class="function"><a name="stop-0">stop/0</a></h3>
+<div class="spec">
+<p><tt>stop() -&gt; ok | {error, term()}</tt><br></p>
+</div><p>Stop the DNSSD application</p>
+
+<h3 class="function"><a name="stop-1">stop/1</a></h3>
+<div class="spec">
+<p><tt>stop(Ref::<a href="#type-op_ref">op_ref()</a>) -&gt; ok | {error, term()}</tt><br></p>
+</div><p>Stop a DNSSD operation</p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc, May 28 2011, 07:09:55.</i></p>
+</body>
+</html>
